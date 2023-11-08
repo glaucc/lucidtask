@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import Autosuggest from 'react-autosuggest';
 
-// import 'codemirror/theme/material.css'; // Import CodeMirror theme CSS
+import './MyEditor.module.css';
 
 const MyEditor = () => {
     const [isMenu1Open, setIsMenu1Open] = useState(false);
@@ -11,29 +11,30 @@ const MyEditor = () => {
     const [isMenu3Open, setIsMenu3Open] = useState(false);
     const [isMenu4Open, setIsMenu4Open] = useState(false);
     const [isMenu5Open, setIsMenu5Open] = useState(false);
-    const [editor1Content, setEditor1Content] = useState('Nothin1');
-    const [editor2Content, setEditor2Content] = useState('Nothin2');
-    const [editor3Content, setEditor3Content] = useState('Nothin3');
-    const [editor4Content, setEditor4Content] = useState('Nothin4');
-    const [editor5Content, setEditor5Content] = useState('Nothin5');
+    const [editor1Content, setEditor1Content] = useState('');
+    const [editor2Content, setEditor2Content] = useState('');
+    const [editor3Content, setEditor3Content] = useState('');
+    const [editor4Content, setEditor4Content] = useState('');
+    const [editor5Content, setEditor5Content] = useState('');
 
 
     const { data, error, isLoading } = useQuery('suggestions', async () => {
         const response = await fetch('https://652f91320b8d8ddac0b2b62b.mockapi.io/autocomplete');
-        return response.json();
+        const data = await response.json();
+        console.log(data); 
+        return data.map(item => item.name); // Mapping the data to extract only the names for suggestions
       });
 
-      const suggestions = data ? data : [];
+      const suggestions = data || []; // Use the API data for suggestions
 
-    const getSuggestions = (value) => {
+
+      const getSuggestions = (value) => {
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
     
         return inputLength === 0
           ? []
-          : ['function1', 'function2', 'function3', 'function4', 'function5'].filter(
-              (func) => func.toLowerCase().slice(0, inputLength) === inputValue
-            );
+          : suggestions.filter((name) => name.toLowerCase().slice(0, inputLength) === inputValue);
       };
     
       // Autosuggest component settings for each editor
@@ -100,12 +101,7 @@ const MyEditor = () => {
       
 
 
-  // Placeholder functions and API autocomplete
-  const autoCompleteAPI = (text) => {
-    // Implement API autocomplete logic here
-    return `API suggestion for ${text}`;
-  };
-
+  
   const handleArrowClick1 = () => {
     setIsMenu1Open(!isMenu1Open);
   };
@@ -149,9 +145,10 @@ const MyEditor = () => {
 
   return (
     <>
+        <div className='editor-container' style={{height: '75vh'}}>
 
     {/* Title 1 */}
-    <div style={{ backgroundColor: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: 'white', padding: '50px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ color: 'gray', cursor: 'pointer' }} onClick={handleArrowClick1}>
           Google GSuite Expense {isMenu1Open ? <FiChevronUp /> : <FiChevronDown />}
@@ -159,19 +156,21 @@ const MyEditor = () => {
         {/* Repeat for other titles */}
       </div>
       {isMenu1Open && (
-          <div style={{ backgroundColor: 'lightgray', marginTop: '10px' }}>
+          <div style={{ backgroundColor: 'lightgray', marginTop: '10px', width: '100%' }}>
           <Autosuggest
+
             {...autosuggestProps1}
             inputProps={{
               value: editor1Content,
               onChange: handleEditor1Change,
+              style: { width: '100%', height: '2rem'},
             }}
           />
         </div>
       )}
     </div>
             {/* Title 2 */}
-    <div style={{ backgroundColor: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: 'white', padding: '50px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ color: 'gray', cursor: 'pointer' }} onClick={handleArrowClick2}>
           Hardware Expense {isMenu2Open ? <FiChevronUp /> : <FiChevronDown />}
@@ -185,13 +184,14 @@ const MyEditor = () => {
             inputProps={{
               value: editor2Content,
               onChange: handleEditor2Change,
+              style: { width: '100%', height: '2rem'},
             }}
           />
         </div>
       )}
     </div>
             {/* Title 3 */}
-    <div style={{ backgroundColor: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: 'white', padding: '50px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ color: 'gray', cursor: 'pointer' }} onClick={handleArrowClick3}>
           Dental & Vision Expense {isMenu3Open ? <FiChevronUp /> : <FiChevronDown />}
@@ -205,13 +205,14 @@ const MyEditor = () => {
             inputProps={{
               value: editor3Content,
               onChange: handleEditor3Change,
+              style: { width: '100%', height: '2rem'},
             }}
           />
         </div>
       )}
     </div>
             {/* Title 4 */}
-    <div style={{ backgroundColor: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: 'white', padding: '50px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ color: 'gray', cursor: 'pointer' }} onClick={handleArrowClick4}>
           Health Insurance Expense {isMenu4Open ? <FiChevronUp /> : <FiChevronDown />}
@@ -225,13 +226,14 @@ const MyEditor = () => {
             inputProps={{
               value: editor4Content,
               onChange: handleEditor4Change,
+              style: { width: '100%', height: '2rem'},
             }}
           />
         </div>
       )}
     </div>
             {/* Title 5 */}
-    <div style={{ backgroundColor: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: 'white', padding: '50px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ color: 'gray', cursor: 'pointer' }} onClick={handleArrowClick5}>
           Advertising Budget {isMenu5Open ? <FiChevronUp /> : <FiChevronDown />}
@@ -245,11 +247,14 @@ const MyEditor = () => {
             inputProps={{
               value: editor5Content,
               onChange: handleEditor5Change,
+              style: { width: '100%', height: '2rem' },
             }}
           />
         </div>
       )}
     </div>
+    </div>
+
     </>
   );
 };
