@@ -16,17 +16,38 @@ const MyEditor = () => {
     const [editor3Content, setEditor3Content] = useState('');
     const [editor4Content, setEditor4Content] = useState('');
     const [editor5Content, setEditor5Content] = useState('');
+    const [selectedItem, setSelectedItem] = useState('');
 
-
+    
+    
+    
     const { data, error, isLoading } = useQuery('suggestions', async () => {
         const response = await fetch('https://652f91320b8d8ddac0b2b62b.mockapi.io/autocomplete');
         const data = await response.json();
         console.log(data); 
         return data.map(item => item.name); // Mapping the data to extract only the names for suggestions
-      });
+    });
 
-      const suggestions = data || []; // Use the API data for suggestions
+    const renderSuggestion = (suggestion, { query, isHighlighted }) => {
+        return (
+          <div
+            style={{
+              backgroundColor: isHighlighted ? 'blue' : 'white',
+              border: isHighlighted ? '1px solid black' : 'none',
+            }}
+          >
+            {suggestion}
+          </div>
+        );
+      };
+    
+    const suggestions = data || []; // Use the API data for suggestions
+    
+    const handleSuggestionSelected = (event, { suggestionValue }) => {
+        setSelectedItem(suggestionValue);
+    };
 
+    const shouldRenderSuggestions = (value) => value.trim().length > 0;
 
       const getSuggestions = (value) => {
         const inputValue = value.trim().toLowerCase();
